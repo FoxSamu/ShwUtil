@@ -1,4 +1,4 @@
-package net.shadew.util.collect;
+package net.shadew.util.data;
 
 import net.shadew.util.contract.NotNull;
 

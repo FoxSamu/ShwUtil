@@ -1,6 +1,7 @@
 package net.shadew.util.contract;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -27,7 +28,7 @@ public final class Validate {
      * @param problem The message of the exception being thrown
      * @throws IllegalArgumentException Thrown per definition
      */
-    public static void illegalArgument(String problem) {
+    public static <T> T illegalArgument(String problem) {
         throw new IllegalArgumentException(problem);
     }
 
@@ -59,15 +60,72 @@ public final class Validate {
     }
 
     /**
-     * Requires the given argument to be not null.
+     * Fails per definition, throwing an {@link NullPointerException} with the given message. This has a return value
+     * which adapts to any type, so that a return statement can easily be made in unreachable code.
      *
-     * @param param The parameter to be not null
-     * @param name  The name of the parameter, for use in the exception being thrown when the contract is violated
-     * @throws NullPointerException When the contract is violated
+     * @param problem The message of the exception being thrown
+     * @return Nothing
+     *
+     * @throws NullPointerException Thrown per definition
      */
-    public static void notNull(Object param, String name) {
-        if (param == null)
-            throw new NullPointerException(name + " == null");
+    @NotNull
+    public static <T> T npe(String problem) {
+        throw new NullPointerException(problem);
+    }
+
+    /**
+     * Fails per definition, throwing an {@link NullPointerException} without a mesage. This has a return value which
+     * adapts to any type, so that a return statement can easily be made in unreachable code.
+     *
+     * @return Nothing
+     *
+     * @throws NullPointerException Thrown per definition
+     */
+    @NotNull
+    public static <T> T npe() {
+        return npe(null);
+    }
+
+    /**
+     * Fails per definition, throwing an {@link IndexOutOfBoundsException} with the given message. This has a return
+     * value which adapts to any type, so that a return statement can easily be made in unreachable code.
+     *
+     * @param problem The message of the exception being thrown
+     * @return Nothing
+     *
+     * @throws IndexOutOfBoundsException Thrown per definition
+     */
+    @NotNull
+    public static <T> T indexOutOfBounds(String problem) {
+        throw new NullPointerException(problem);
+    }
+
+    /**
+     * Fails per definition, throwing an {@link IndexOutOfBoundsException} with the message "[index] is out of bounds".
+     * This has a return value which adapts to any type, so that a return statement can easily be made in unreachable
+     * code.
+     *
+     * @param i The index that was out of bounds
+     * @return Nothing
+     *
+     * @throws IndexOutOfBoundsException Thrown per definition
+     */
+    @NotNull
+    public static <T> T indexOutOfBounds(int i) {
+        return indexOutOfBounds(i + " is out of bounds");
+    }
+
+    /**
+     * Fails per definition, throwing an {@link IndexOutOfBoundsException} without a mesage. This has a return value
+     * which adapts to any type, so that a return statement can easily be made in unreachable code.
+     *
+     * @return Nothing
+     *
+     * @throws IndexOutOfBoundsException Thrown per definition
+     */
+    @NotNull
+    public static <T> T indexOutOfBounds() {
+        return indexOutOfBounds(null);
     }
 
     /**
@@ -83,6 +141,19 @@ public final class Validate {
     }
 
     /**
+     * Requires the given boolean to be true, throwing a given exception type if not
+     *
+     * @param expr        The condition that needs to be met
+     * @param problem     The problem if the condition is not met
+     * @param exceptionFn The function to generate a specific exception if the condition was not met
+     * @throws X When the contract is violated
+     */
+    public static <X extends Throwable> void isTrue(boolean expr, String problem, Function<? super String, ? extends X> exceptionFn) throws X {
+        if (!expr)
+            throw exceptionFn.apply(problem);
+    }
+
+    /**
      * Requires the given boolean to be false.
      *
      * @param expr    The condition that needs to be not met
@@ -92,6 +163,31 @@ public final class Validate {
     public static void isFalse(boolean expr, String problem) {
         if (expr)
             throw new IllegalArgumentException(problem);
+    }
+
+    /**
+     * Requires the given boolean to be false, throwing a given exception type if not
+     *
+     * @param expr        The condition that needs to be met
+     * @param problem     The problem if the condition is not met
+     * @param exceptionFn The function to generate a specific exception if the condition was not met
+     * @throws X When the contract is violated
+     */
+    public static <X extends Throwable> void isFalse(boolean expr, String problem, Function<? super String, ? extends X> exceptionFn) throws X {
+        if (expr)
+            throw exceptionFn.apply(problem);
+    }
+
+    /**
+     * Requires the given argument to be not null.
+     *
+     * @param param The parameter to be not null
+     * @param name  The name of the parameter, for use in the exception being thrown when the contract is violated
+     * @throws NullPointerException When the contract is violated
+     */
+    public static void notNull(Object param, String name) {
+        if (param == null)
+            throw new NullPointerException(name + " == null");
     }
 
     /**
@@ -1584,5 +1680,591 @@ public final class Validate {
         notNull(param, name);
         if (!param.hasNext())
             throw new NoSuchElementException(name + " has no elements left");
+    }
+
+    /**
+     * Requires the given index to be in the specified length bounds, ranging from 0 (inclusive) to the length
+     * (exclusive).
+     *
+     * @param length The length bound
+     * @param index  The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     */
+    public static void indexInBounds(int length, int index) {
+        if (index < 0 || index >= length)
+            throw new IndexOutOfBoundsException(index + "");
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(byte[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(short[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(int[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(long[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(float[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(double[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(boolean[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexInBounds(char[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified array, ranging from 0 (inclusive) to the length (exclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static <T> void indexInBounds(T[] arr, int index) {
+        notNull(arr, "arr");
+        indexInBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be in the specified collection, ranging from 0 (inclusive) to the length
+     * (exclusive).
+     *
+     * @param c     The collection to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the collection is null
+     */
+    public static void indexInBounds(Collection<?> c, int index) {
+        notNull(c, "c");
+        indexInBounds(c.size(), index);
+    }
+
+    /**
+     * Requires the given index to be in the specified char sequence, ranging from 0 (inclusive) to the length
+     * (exclusive).
+     *
+     * @param seq   The sequence to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the sequence is null
+     */
+    public static void indexInBounds(CharSequence seq, int index) {
+        notNull(seq, "seq");
+        indexInBounds(seq.length(), index);
+    }
+
+    /**
+     * Requires the given index to be on the specified length bounds, ranging from 0 (inclusive) to the length
+     * (inclusive).
+     *
+     * @param length The length bound
+     * @param index  The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     */
+    public static void indexOnBounds(int length, int index) {
+        indexInBounds(length + 1, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(byte[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(short[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(int[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(long[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(float[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(double[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(boolean[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void indexOnBounds(char[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified array, ranging from 0 (inclusive) to the length (inclusive).
+     *
+     * @param arr   The array to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static <T> void indexOnBounds(T[] arr, int index) {
+        notNull(arr, "arr");
+        indexOnBounds(arr.length, index);
+    }
+
+    /**
+     * Requires the given index to be on the specified collection, ranging from 0 (inclusive) to the length
+     * (inclusive).
+     *
+     * @param c     The collection to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the collection is null
+     */
+    public static void indexOnBounds(Collection<?> c, int index) {
+        notNull(c, "c");
+        indexOnBounds(c.size(), index);
+    }
+
+    /**
+     * Requires the given index to be on the specified char sequence, ranging from 0 (inclusive) to the length
+     * (inclusive).
+     *
+     * @param seq   The sequence to check the index for
+     * @param index The index
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the sequence is null
+     */
+    public static void indexOnBounds(CharSequence seq, int index) {
+        notNull(seq, "seq");
+        indexOnBounds(seq.length(), index);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the specified bounds, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= bound}</li>
+     * </ul>
+     *
+     * @param bound     The length bound
+     * @param off       The offset
+     * @param len       The length
+     * @param boundName The length bound parameter name, for use in the exception being thrown when the contract is
+     *                  violated
+     * @param offName   The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName   The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     */
+    public static void rangeValid(int bound, int off, int len, String boundName, String offName, String lenName) {
+        if (off < 0)
+            throw new IndexOutOfBoundsException(offName + " < 0");
+        if (len < 0)
+            throw new IndexOutOfBoundsException(lenName + " < 0");
+        if (off + len > bound)
+            throw new IndexOutOfBoundsException(offName + " + " + lenName + " > " + boundName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(byte[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(short[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(int[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(long[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(float[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(double[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(boolean[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static void rangeValid(char[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified array, such that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= arr.length}</li>
+     * </ul>
+     *
+     * @param arr     The array
+     * @param off     The offset
+     * @param len     The length
+     * @param arrName The array parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the array is null
+     */
+    public static <T> void rangeValid(T[] arr, int off, int len, String arrName, String offName, String lenName) {
+        notNull(arr, arrName);
+        rangeValid(arr.length, off, len, arrName + ".length", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified collection, such
+     * that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= c.size()}</li>
+     * </ul>
+     *
+     * @param c       The collection
+     * @param off     The offset
+     * @param len     The length
+     * @param cName   The collection parameter name, for use in the exception being thrown when the contract is
+     *                violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the collection is null
+     */
+    public static void rangeValid(Collection<?> c, int off, int len, String cName, String offName, String lenName) {
+        notNull(c, cName);
+        rangeValid(c.size(), off, len, cName + ".size()", offName, lenName);
+    }
+
+    /**
+     * Requires the given offset-length range to be a valid range within the bound of the specified char sequence, such
+     * that:
+     * <ul>
+     * <li>{@code off >= 0}</li>
+     * <li>{@code len >= 0}</li>
+     * <li>{@code off + len <= seq.length()}</li>
+     * </ul>
+     *
+     * @param seq     The sequence
+     * @param off     The offset
+     * @param len     The length
+     * @param seqName The sequence parameter name, for use in the exception being thrown when the contract is violated
+     * @param offName The offset parameter name, for use in the exception being thrown when the contract is violated
+     * @param lenName The length parameter name, for use in the exception being thrown when the contract is violated
+     * @throws IndexOutOfBoundsException When the contract is violated
+     * @throws NullPointerException      When the sequence is null
+     */
+    public static void rangeValid(CharSequence seq, int off, int len, String seqName, String offName, String lenName) {
+        notNull(seq, seqName);
+        rangeValid(seq.length(), off, len, seqName + ".length()", offName, lenName);
     }
 }

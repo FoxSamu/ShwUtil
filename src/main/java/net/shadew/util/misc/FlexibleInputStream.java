@@ -121,9 +121,11 @@ public class FlexibleInputStream extends FilterInputStream {
      *
      * @throws IOException If an I/O error occurs, or when the stream was closed.
      * @see FlexibleInputStream#read(byte[], int, int)
+     * @throws NullPointerException When {@code b == null}
      */
     @Override
     public int read(byte[] b) throws IOException {
+        Validate.notNull(b, "b");
         if (closed) throw new IOException("Stream closed");
         return read(b, 0, b.length);
     }
@@ -143,9 +145,13 @@ public class FlexibleInputStream extends FilterInputStream {
      *
      * @throws IOException If an I/O error occurs, or when the stream was closed.
      * @see FlexibleInputStream#read(byte[], int, int)
+     * @throws NullPointerException When {@code b == null}
+     * @throws IndexOutOfBoundsException When {@code off < 0}, {@code len < 0} or when {@code off + len > b.length}
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
+        Validate.notNull(b, "b");
+        Validate.rangeValid(b, off, len, "b", "off", "len");
         if (closed) throw new IOException("Stream closed");
         if (len == 0) return 0; // Special case
 
@@ -223,15 +229,20 @@ public class FlexibleInputStream extends FilterInputStream {
 
     /**
      * Unreads <code>len</code> byte into the unread buffer, if and only if it is not negative. This will resize the
-     * unread buffer if necessary. If a mark was set, it will remove up to <code>len</code> byte from the mark buffer.
+     * unread buffer if necessary. If a mark was set, it will remove up to <code>len</code> chars from the mark buffer.
      * If the mark buffer contains less bytes than <code>len</code>, it will unread behind the mark position.
      *
      * @param b   The bytes to be unread
      * @param off The offset in <code>b</code>
      * @param len The amount of bytes to unread
      * @throws IOException When the stream is closed.
+     * @throws NullPointerException When {@code b == null}
+     * @throws IndexOutOfBoundsException When {@code off < 0} or when {@code off + len > b.length}
      */
     public void unread(byte[] b, int off, int len) throws IOException {
+        Validate.notNull(b, "b");
+        if(len < 0) return;
+        Validate.rangeValid(b, off, len, "b", "off", "len");
         if (closed) throw new IOException("Stream closed");
         if (len > unreadIndex) {
             // Grow unread buffer if necessary
@@ -253,13 +264,15 @@ public class FlexibleInputStream extends FilterInputStream {
     }
 
     /**
-     * Unreads <code>b.length</code> byte into the unread buffer, if and only if it is not negative. This will simply
-     * perform <code>{@link #unread(byte[], int, int)}(b, 0, b.length)</code>.
+     * Unreads <code>b.length</code> bytes into the unread buffer. This will simply perform <code>{@link #unread(byte[],
+     * int, int)}(b, 0, b.length)</code>.
      *
      * @param b The bytes to be unread
      * @throws IOException When the stream is closed
+     * @throws NullPointerException When {@code b == null}
      */
     public void unread(byte[] b) throws IOException {
+        Validate.notNull(b, "b");
         if (closed) throw new IOException("Stream closed");
         unread(b, 0, b.length);
     }
@@ -292,8 +305,12 @@ public class FlexibleInputStream extends FilterInputStream {
      * @return The exact amount of bytes read
      *
      * @throws IOException When an I/O error occurs, or when the stream was closed
+     * @throws NullPointerException When {@code b == null}
+     * @throws IndexOutOfBoundsException When {@code off < 0}, {@code len < 0} or when {@code off + len > b.length}
      */
     public int peek(byte[] b, int off, int len) throws IOException {
+        Validate.notNull(b, "b");
+        Validate.rangeValid(b, off, len, "b", "off", "len");
         if (closed) throw new IOException("Stream closed");
         int r = read(b, off, len);
         if (r == -1) return -1; // Stop here
@@ -310,8 +327,10 @@ public class FlexibleInputStream extends FilterInputStream {
      * @return The exact amount of bytes read
      *
      * @throws IOException When an I/O error occurs, or when the stream was closed
+     * @throws NullPointerException When {@code b == null}
      */
-    public int peek(byte[] b) throws IOException {
+    public int peek(@NotNull byte[] b) throws IOException {
+        Validate.notNull(b, "b");
         if (closed) throw new IOException("Stream closed");
         return peek(b, 0, b.length);
     }
@@ -361,9 +380,12 @@ public class FlexibleInputStream extends FilterInputStream {
      * bytes until the stream is either closed, the {@code readLimit} is reached or when a new mark is set.
      *
      * @param readlimit The maximum amount of bytes to be remembered before the mark becomes invalidated.
+     *
+     * @throws IllegalArgumentException When {@code readlimit < 0}
      */
     @Override
     public synchronized void mark(int readlimit) {
+        Validate.notNegative(readlimit, "readlimit");
         if (closed) return;
         if (markBuffer == null || markBuffer.length < readlimit) {
             markBuffer = new byte[readlimit]; // Create/Resize mark buffer if needed

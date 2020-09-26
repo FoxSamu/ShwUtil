@@ -1,4 +1,4 @@
-package net.shadew.util.collect;
+package net.shadew.util.data;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
