@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2020 Shadew
+ * Licensed under the Apache 2.0 License
+ */
+
 package net.shadew.util.misc;
 
 import net.shadew.util.contract.NotNull;

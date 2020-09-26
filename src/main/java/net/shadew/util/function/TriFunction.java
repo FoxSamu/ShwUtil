@@ -1,6 +1,10 @@
+/*
+ * Copyright (c) 2020 Shadew
+ * Licensed under the Apache 2.0 License
+ */
+
 package net.shadew.util.function;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 import net.shadew.util.contract.Validate;
