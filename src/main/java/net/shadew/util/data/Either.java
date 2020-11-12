@@ -56,7 +56,7 @@ import net.shadew.util.contract.Validate;
  * <p>
  * One can see the {@code Either} as two {@link Optional}s of which their availability is mutually exclusive: the first
  * optional is not empty if and only if the second one is empty, and the second optional is not empty if and only if
- * the first one is empty.
+ * the first one is empty. For each {@code Either e} holds: {@code e.isFirst() ^ e.isSecond() == true}.
  * </p>
  *
  * @param <F> The first type of the either
@@ -352,14 +352,16 @@ public abstract class Either<F, S> {
      * by {@link Object#equals}.
      * </li>
      * </ul>
+     *
      * @return True if this either is equal to the given object (as specified above) and false otherwise.
      */
     public abstract boolean equals(Object o);
 
     /**
-     * Returns a hash code for this either, which is a mix of the hash code of this either's element and a boolean
-     * which is false for a first-side either and true for a second-side either. This method should attempt to generate
-     * a different hash code for first- and second-side eithers that nonetheless have the same value.
+     * Returns a hash code for this either, which is a mix of the hash code of this either's element and a boolean which
+     * is false for a first-side either and true for a second-side either. This method should attempt to generate a
+     * different hash code for first- and second-side eithers that nonetheless have the same value.
+     *
      * @return The computed hash code of this either
      */
     public abstract int hashCode();
@@ -367,6 +369,7 @@ public abstract class Either<F, S> {
     /**
      * Converts this either to a string. This returns:<br/>
      * <code>@code Either.<i>first/second</i>[<i>string representation of value</i>]</code>
+     *
      * @return The string representation of this either.
      */
     public abstract String toString();
@@ -429,17 +432,17 @@ public abstract class Either<F, S> {
      * this method instead because of the extra class that indicates the first type. Where the second type can obviously
      * be inferred from the context, it is recommended to use {@link #second(S)} instead.
      *
-     * @param second    The value for the new either
+     * @param <F>       The first type, which is the type of the passed class
+     * @param <S>       The second type, which is the type of the passed value
      * @param firstType The type class of the first type of this either. Not used, just to stabilize the method
      *                  signature. Can be null but not recommended.
-     * @param <F>       The first type, which is the type of the passed class
-     * @param <S>       The second type, which is tye type of the passed value
+     * @param second    The value for the new either
      * @return A new either
      *
      * @throws NullPointerException When the specified value is null
      */
     @NotNull
-    public static <F, S> Either<F, S> second(@NotNull S second, @NotNull Class<F> firstType) {
+    public static <F, S> Either<F, S> second(@NotNull Class<F> firstType, @NotNull S second) {
         return new Second<>(second);
     }
 
@@ -515,6 +518,106 @@ public abstract class Either<F, S> {
         Validate.notNull(first, "first");
         Validate.notNull(second, "second");
         return second.<Either<F, S>>map(Either::second).orElseGet(() -> first(first.get()));
+    }
+
+    /**
+     * Returns an either with a value of the first type if the given condition is true, and an either of the second type
+     * if the given condition is false. This is a convenient alternative for a {@code ?:} (ternary) expression with
+     * first and second. Note that, unlike a ternary operator, both first and second values are computed. Use {@link
+     * #getFirstIf} to lazily load the needed values from suppliers.
+     * <pre>
+     * Either.firstIf(condition, something, somethingElse)
+     * // is the same as
+     * condition ? Either.first(something) : Either.second(somethingElse)
+     * </pre>
+     *
+     * @param cond   Condition to test
+     * @param first  Either value of first type, when condition is true
+     * @param second Either value of second type, when condition is false
+     * @return A new either
+     *
+     * @throws NullPointerException When the first or the second value is null
+     */
+    @NotNull
+    public static <F, S> Either<F, S> firstIf(boolean cond, F first, S second) {
+        Validate.notNull(first, "first");
+        Validate.notNull(second, "second");
+        return cond ? first(first) : second(second);
+    }
+
+    /**
+     * Returns an either with a value of the second type if the given condition is true, and an either of the first type
+     * if the given condition is false. This is a convenient alternative for a {@code ?:} (ternary) expression with
+     * second and first. Note that, unlike a ternary operator, both first and second values are computed. Use {@link
+     * #getSecondIf} to lazily load the needed values from suppliers.
+     * <pre>
+     * Either.secondIf(condition, something, somethingElse)
+     * // is the same as
+     * condition ? Either.second(somethingElse) : Either.first(something)
+     * </pre>
+     *
+     * @param cond   Condition to test
+     * @param first  Either value of first type, when condition is false
+     * @param second Either value of second type, when condition is true
+     * @return A new either
+     *
+     * @throws NullPointerException When the first or the second value is null
+     */
+    @NotNull
+    public static <F, S> Either<F, S> secondIf(boolean cond, F first, S second) {
+        Validate.notNull(first, "first");
+        Validate.notNull(second, "second");
+        return cond ? second(second) : first(first);
+    }
+
+    /**
+     * Returns an either with a value of the first type if the given condition is true, and an either of the second type
+     * if the given condition is false. The value of the either is provided by {@linkplain Supplier#get getting} from a
+     * {@link Supplier}. This is a convenient alternative for a {@code ?:} (ternary) expression with first and second.
+     * <pre>
+     * Either.getFirstIf(condition, () -> something, () -> somethingElse)
+     * // is the same as
+     * condition ? Either.first(something) : Either.second(somethingElse)
+     * </pre>
+     *
+     * @param cond   Condition to test
+     * @param first  Either value getter of first type, when condition is true
+     * @param second Either value getter of second type, when condition is false
+     * @return A new either
+     *
+     * @throws NullPointerException When the first or the second {@link Supplier} is null, or when the deferred supplier
+     *                              (the one that was chosen) returned null
+     */
+    @NotNull
+    public static <F, S> Either<F, S> getFirstIf(boolean cond, Supplier<F> first, Supplier<S> second) {
+        Validate.notNull(first, "first");
+        Validate.notNull(second, "second");
+        return cond ? first(first.get()) : second(second.get());
+    }
+
+    /**
+     * Returns an either with a value of the second type if the given condition is true, and an either of the first type
+     * if the given condition is false. The value of the either is provided by {@linkplain Supplier#get getting} from a
+     * {@link Supplier}. This is a convenient alternative for a {@code ?:} (ternary) expression with second and first.
+     * <pre>
+     * Either.getSecondIf(condition, () -> something, () -> somethingElse)
+     * // is the same as
+     * condition ? Either.second(somethingElse) : Either.first(something)
+     * </pre>
+     *
+     * @param cond   Condition to test
+     * @param first  Either value getter of first type, when condition is false
+     * @param second Either value getter of second type, when condition is true
+     * @return A new either
+     *
+     * @throws NullPointerException When the first or the second {@link Supplier} is null, or when the deferred supplier
+     *                              (the one that was chosen) returned null
+     */
+    @NotNull
+    public static <F, S> Either<F, S> getSecondIf(boolean cond, Supplier<F> first, Supplier<S> second) {
+        Validate.notNull(first, "first");
+        Validate.notNull(second, "second");
+        return cond ? second(second.get()) : first(first.get());
     }
 
     /**
