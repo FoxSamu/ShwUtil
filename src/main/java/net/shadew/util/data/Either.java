@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Shadew
+ * Copyright (c) 2021 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import net.shadew.util.contract.Validate;
  * method only returns only ints or strings. Using an {@code Either}, one can do:
  * <pre>public Either&lt;String, Integer&gt; returnEitherStringOrInt();</pre>
  * The signature of this method is clear: it can be clearly derived from the return type that it returns either a string
- * or an integer.
+ * or an integer. The {@link Either} object can then be used to separate the two situations.
  * <p>
  * Like with the contract of {@linkplain Pair pairs}, eithers can contain a null value on neither of the sides, and to
  * allow nullity on any of its values it should be wrapped into an {@link Optional}.

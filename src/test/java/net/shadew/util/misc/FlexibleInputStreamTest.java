@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Shadew
+ * Copyright (c) 2021 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
+import net.shadew.util.io.FlexibleInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 

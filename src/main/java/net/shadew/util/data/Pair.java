@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Shadew
+ * Copyright (c) 2021 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,28 @@ public final class Pair<F, S> {
     @NotNull
     public S second() {
         return second;
+    }
+
+    /**
+     * Returns the first element of this pair, wrapped in an {@link Either}. Following the contract of a pair, this
+     * method never returns {@code null}.
+     *
+     * @return The first element of the pair as an {@link Either}.
+     */
+    @NotNull
+    public Either<F, S> firstEither() {
+        return Either.first(first);
+    }
+
+    /**
+     * Returns the second element of this pair, wrapped in an {@link Either}. Following the contract of a pair, this
+     * method never returns {@code null}.
+     *
+     * @return The second element of the pair as an {@link Either}.
+     */
+    @NotNull
+    public Either<F, S> secondEither() {
+        return Either.second(second);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Shadew
+ * Copyright (c) 2021 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import net.shadew.util.contract.Validate;
 
 /**
  * A utility class for checking and casting objects to other types. In some frameworks classes indirectly inherit
- * another class or interface, in such cases casts and {@link instanceof} operations give compiler errors. These
+ * another class or interface, in such cases casts and {@code instanceof} operations give compiler errors. These
  * utilities use {@link Class}es to cast and check types.
  */
 public final class TypeUtil {

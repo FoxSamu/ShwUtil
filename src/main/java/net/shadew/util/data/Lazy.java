@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Shadew
+ * Copyright (c) 2021 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import net.shadew.util.contract.NotNull;
 import net.shadew.util.contract.Validate;
 
 /**
- * A lazy-load value. This class wraps a supplier in such a way that it only calls the wrapped supplier once, caches the
- * value and then keeps returning the cached value. The value wrapped by a lazy-load value must never be null.
+ * A lazily loaded value. This class wraps a supplier in such a way that it only calls the wrapped supplier once, caches
+ * the value and then keeps returning the cached value. The value wrapped by a lazy-load value must never be null.
  */
 public final class Lazy<T> implements Supplier<T> {
     private T value;

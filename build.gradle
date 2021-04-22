@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Shadew
+ * Copyright (c) 2021 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ publishing {
     repositories {
         maven {
             name = "ShwMaven"
-            url = uri( "http://maven.shadew.net/" )
+            url = uri( "https://maven.shadew.net/" )
             credentials {
                 username = shwMavenUser
                 password = shwMavenPass
