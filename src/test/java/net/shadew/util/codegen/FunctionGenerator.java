@@ -46,11 +46,6 @@ public final class FunctionGenerator {
                 for (Type in2 : Type.values()) {
                     if (in2 == Type.VOID) continue;
                     generateFunc2(in1, in2, type, rpkg, outDir);
-
-                    for (Type in3 : Type.values()) {
-                        if (in3 == Type.VOID) continue;
-                        generateFunc3(in1, in2, in3, type, rpkg, outDir);
-                    }
                 }
             }
         }
