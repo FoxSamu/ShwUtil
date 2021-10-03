@@ -42,7 +42,7 @@ test {
 
 publishing {
     publications {
-        maven( MavenPublication ) {
+        maven(MavenPublication) {
             groupId = project.group
             artifactId = 'shwutil'
             version = project.version
@@ -54,7 +54,7 @@ publishing {
     repositories {
         maven {
             name = "ShwMaven"
-            url = uri( "https://maven.shadew.net/" )
+            url = uri("https://maven.shadew.net/")
             credentials {
                 username = shwMavenUser
                 password = shwMavenPass

@@ -32,9 +32,9 @@ public enum OS {
     WINDOWS,
 
     /**
-     * The Apple OSX/MacOS/Darwin operating system
+     * The Apple MacOS/Darwin operating system
      */
-    OSX,
+    MAC_OS,
 
     /**
      * Any Linux-based operating system
@@ -42,9 +42,15 @@ public enum OS {
     LINUX,
 
     /**
-     * Any generic operating system that is not Windows, OSX or Linux
+     * Any generic operating system that is not Windows, MacOS or Linux
      */
     OTHER;
+
+    /**
+     * @deprecated Renamed to {@link #MAC_OS}
+     */
+    @Deprecated
+    public static final OS OSX = MAC_OS;
 
     private static OS detected;
 
@@ -57,7 +63,7 @@ public enum OS {
         if (detected == null) {
             String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
             if (os.contains("mac") || os.contains("darwin")) {
-                detected = OSX;
+                detected = MAC_OS;
             } else if (os.contains("win")) {
                 detected = WINDOWS;
             } else if (os.contains("nux")) {
