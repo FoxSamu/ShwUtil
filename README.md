@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compile "net.shadew:shwutil:1.6.0"
+    compile "net.shadew:shwutil:1.7.0"
     // ...
 }
 ```
