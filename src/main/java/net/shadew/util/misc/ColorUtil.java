@@ -1377,11 +1377,9 @@ public final class ColorUtil {
             float hue = (g - b) / delta % 6 * 60;
             return hue < 0 ? hue + 360 : hue;
         } else if (cmax == g) {
-            float hue = ((b - r) / delta + 2) * 60;
-            return hue < 0 ? hue + 360 : hue;
+            return ((b - r) / delta + 2) * 60;
         } else {
-            float hue = ((r - g) / delta + 4) * 60;
-            return hue < 0 ? hue + 360 : hue;
+            return ((r - g) / delta + 4) * 60;
         }
     }
 
@@ -1407,11 +1405,9 @@ public final class ColorUtil {
             double hue = (g - b) / delta % 6 * 60;
             return hue < 0 ? hue + 360 : hue;
         } else if (cmax == g) {
-            double hue = ((b - r) / delta + 2) * 60;
-            return hue < 0 ? hue + 360 : hue;
+            return ((b - r) / delta + 2) * 60;
         } else {
-            double hue = ((r - g) / delta + 4) * 60;
-            return hue < 0 ? hue + 360 : hue;
+            return ((r - g) / delta + 4) * 60;
         }
     }
 
