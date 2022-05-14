@@ -1373,7 +1373,7 @@ public final class ColorUtil {
 
         if (delta == 0) return 0;
 
-        if (cmax == r && g > b) {
+        if (cmax == r && g >= b) {
             return (g - b) / delta * 60;
         } else if (cmax == g) {
             return ((b - r) / delta + 2) * 60;
@@ -1402,7 +1402,7 @@ public final class ColorUtil {
 
         if (delta == 0) return 0;
 
-        if (cmax == r && g > b) {
+        if (cmax == r && g >= b) {
             return (g - b) / delta * 60;
         } else if (cmax == g) {
             return ((b - r) / delta + 2) * 60;
