@@ -1373,13 +1373,14 @@ public final class ColorUtil {
 
         if (delta == 0) return 0;
 
-        if (cmax == r) {
-            float hue = (g - b) / delta % 6 * 60;
-            return hue < 0 ? hue + 360 : hue;
+        if (cmax == r && g > b) {
+            return (g - b) / delta * 60;
         } else if (cmax == g) {
             return ((b - r) / delta + 2) * 60;
-        } else {
+        } else if (cmax == b) {
             return ((r - g) / delta + 4) * 60;
+        } else {
+            return ((g - b) / delta + 6) * 60;
         }
     }
 
@@ -1401,13 +1402,14 @@ public final class ColorUtil {
 
         if (delta == 0) return 0;
 
-        if (cmax == r) {
-            double hue = (g - b) / delta % 6 * 60;
-            return hue < 0 ? hue + 360 : hue;
+        if (cmax == r && g > b) {
+            return (g - b) / delta * 60;
         } else if (cmax == g) {
             return ((b - r) / delta + 2) * 60;
-        } else {
+        } else if (cmax == b) {
             return ((r - g) / delta + 4) * 60;
+        } else {
+            return ((g - b) / delta + 6) * 60;
         }
     }
 
