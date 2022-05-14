@@ -1370,19 +1370,19 @@ public final class ColorUtil {
         float cmin = MathUtil.min(r, MathUtil.min(g, b));
 
         float delta = cmax - cmin;
-        float hue = 0F;
 
-        if (delta == 0) return hue;
+        if (delta == 0) return 0;
 
         if (cmax == r) {
-            hue = (g - b) / delta % 6 * 60;
+            float hue = (g - b) / delta % 6 * 60;
+            return hue < 0 ? hue + 360 : hue;
         } else if (cmax == g) {
-            hue = ((b - r) / delta + 2) * 60;
+            float hue = ((b - r) / delta + 2) * 60;
+            return hue < 0 ? hue + 360 : hue;
         } else {
-            hue = ((r - g) / delta + 4) * 60;
+            float hue = ((r - g) / delta + 4) * 60;
+            return hue < 0 ? hue + 360 : hue;
         }
-
-        return hue < 0 ? hue + 360 : hue;
     }
 
     /**
@@ -1400,19 +1400,19 @@ public final class ColorUtil {
         double cmin = Math.min(r, Math.min(g, b));
 
         double delta = cmax - cmin;
-        double hue = 0D;
 
-        if (delta == 0) return hue;
+        if (delta == 0) return 0;
 
         if (cmax == r) {
-            hue = (g - b) / delta % 6 * 60;
+            double hue = (g - b) / delta % 6 * 60;
+            return hue < 0 ? hue + 360 : hue;
         } else if (cmax == g) {
-            hue = ((b - r) / delta + 2) * 60;
+            double hue = ((b - r) / delta + 2) * 60;
+            return hue < 0 ? hue + 360 : hue;
         } else {
-            hue = ((r - g) / delta + 4) * 60;
+            double hue = ((r - g) / delta + 4) * 60;
+            return hue < 0 ? hue + 360 : hue;
         }
-
-        return hue < 0 ? hue + 360 : hue;
     }
 
     /**
