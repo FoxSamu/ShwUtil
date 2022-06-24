@@ -13,7 +13,10 @@ repositories {
 }
 
 dependencies {
+    // Gradle ≤4.9
     compile "net.shadew:shwutil:1.7.0"
+    // Gradle 4.10+
+    implementation "net.shadew:shwutil:1.7.0"
     // ...
 }
 ```
