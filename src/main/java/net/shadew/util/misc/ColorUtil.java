@@ -1356,7 +1356,7 @@ public final class ColorUtil {
     }
 
     /**
-     * Returns the HSV/HSL hue component of a color as a number between 0 and 1
+     * Returns the HSV/HSL hue component of a color as a number between 0 and 360
      *
      * @param color The RGB(A) color
      * @return The HSV/HSL hue
@@ -1370,21 +1370,22 @@ public final class ColorUtil {
         float cmin = MathUtil.min(r, MathUtil.min(g, b));
 
         float delta = cmax - cmin;
+
         if (delta == 0) return 0;
 
-        if (cmax == r) {
-            return (g - b) / delta % 6 * 60;
-        }
-
-        if (cmax == g) {
+        if (cmax == r && g >= b) {
+            return (g - b) / delta * 60;
+        } else if (cmax == g) {
             return ((b - r) / delta + 2) * 60;
+        } else if (cmax == b) {
+            return ((r - g) / delta + 4) * 60;
+        } else {
+            return ((g - b) / delta + 6) * 60;
         }
-
-        return ((r - g) / delta + 4) * 60;
     }
 
     /**
-     * Returns the HSV/HSL hue component of a color as a number between 0 and 1
+     * Returns the HSV/HSL hue component of a color as a number between 0 and 360
      *
      * @param color The RGB(A) color
      * @return The HSV/HSL hue
@@ -1398,17 +1399,18 @@ public final class ColorUtil {
         double cmin = Math.min(r, Math.min(g, b));
 
         double delta = cmax - cmin;
+
         if (delta == 0) return 0;
 
-        if (cmax == r) {
-            return (g - b) / delta % 6 * 60;
-        }
-
-        if (cmax == g) {
+        if (cmax == r && g >= b) {
+            return (g - b) / delta * 60;
+        } else if (cmax == g) {
             return ((b - r) / delta + 2) * 60;
+        } else if (cmax == b) {
+            return ((r - g) / delta + 4) * 60;
+        } else {
+            return ((g - b) / delta + 6) * 60;
         }
-
-        return ((r - g) / delta + 4) * 60;
     }
 
     /**
